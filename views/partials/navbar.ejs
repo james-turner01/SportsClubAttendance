@@ -10,7 +10,8 @@
         <a class="nav-link" href="/schedule">Schedule</a>
         <a class="nav-link" href="/schedule/past">Past Activites</a>
         <!-- if the user if logged in and has isAdmin === true, display 'Add Activity' -->
-        <% if (currentUser && (currentUser.isAdmin === 0 || currentUser.isAdmin === 1)) {%>
+        <!-- currentUser && (currentUser.isAdmin === 0 || currentUser.isAdmin === 1) -->
+        <% if (currentUser) {%>
         <a class="nav-link" href="/training/new">Add Activity</a>
         <% } %>
       </div>
