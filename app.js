@@ -55,7 +55,7 @@ const mongoSanitize = require('express-mongo-sanitize');
 //our Url to access our DB
 //dbUrl = process.env.DB_URL
 //connect to database
-dbUrl = 'mongodb://127.0.0.1:/eckc-app'
+dbUrl = process.env.DB_URL
 mongoose.connect(dbUrl);
 
 //error handling for connecting to a database
