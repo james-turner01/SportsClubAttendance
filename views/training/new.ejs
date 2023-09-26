@@ -1,0 +1,283 @@
+<% layout('layouts/boilerplate') %>
+<!-- <div class="container-fluid"> -->
+<!-- <main class="container col-md-10 offset-md-1"> -->
+<!-- BUTTONS TO SELECT WHICH FORM TO DISPLAY (starts with training form by default) -->
+<div class=" row">
+  <div class="container text-center col-8 col-md-8">
+    <div class="row">
+      <div class="col-8 col-sm-4 d-grid my-2 mx-auto">
+        <button type="button" class="btn btn-success" id="training-btn" onclick="displayForm('training-form');buttonStyle('training-btn');startDateAndTimeValueValidate('training-date', 'training-start-time', 'training-end-time');resetAlert('training');initAutocomplete();"><b>TRAINING</b></button>
+      </div>
+      <div class="col-8 col-sm-4 d-grid my-2 mx-auto">
+        <button type="button" class="btn btn-outline-primary" id="fixture-btn" onclick="displayForm('fixture-form');buttonStyle('fixture-btn');startDateAndTimeValueValidate('fixture-date', 'fixture-start-time', 'fixture-end-time');resetAlert('fixture');initAutocomplete();"><b>FIXTURE</b></button>
+      </div>
+      <div class="col-8 col-sm-4 d-grid my-2 mx-auto">
+        <button type="button" class="btn btn-outline-danger" id="event-btn" onclick="displayForm('event-form');buttonStyle('event-btn');startDateAndTimeValueValidate('event-date', 'event-start-time', 'event-end-time');initAutocomplete()"><b>EVENT</b></button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- New training session form -->
+<div class="row" id="training-form">
+  <div class="container col-10 col-md-8">
+    <h1 class="text-center">NEW TRAINING</h1>
+    <form action="/training/new" method="POST" id="form-training" class="needs-validation" novalidate>
+      <div class="mb-3">
+        <label class="form-label" for="training-location">Location:</label>
+        <input class="form-control input" type="text" name="training[location]" id="training-location" required>
+        <div class="invalid-feedback">
+          Enter a location
+        </div>
+      </div>
+      <div class="mb-3">
+        <label class="form-label" for="training-date">Training Date: </label>
+        <input class="form-control input" type="date" name="training[date]" id="training-date" onchange="onStartDateChange('training-date', 'training-start-time', 'training-end-time');changeRepeatEndMinDate()" onblur="startEndDateWarningCheck('training')" required>
+        <div class="invalid-feedback">
+          Select a valid date
+        </div>
+      </div>
+      <div class="mb-3">
+        <label class="form-label" for="training-start-time">Start Time: </label>
+        <input class="form-control input" type="time" name="training[startTime]" id="training-start-time" onchange="checkEndTime(document.getElementById('training-start-time'), document.getElementById('training-end-time'), 1)" onblur="startEndDateWarningCheck('training')" required>
+        <div class="invalid-feedback">
+          Enter a valid start time
+        </div>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label" for="training-end-time">End Time: </label>
+        <input class="form-control input" type="time" name="training[endTime]" id="training-end-time" onblur="startEndDateWarningCheck('training')">
+        <div class="invalid-feedback">
+          Enter a valid end time
+        </div>
+      </div>
+      <div id="trainingWarningAlertDiv"></div>
+
+      <div class="mb-3">
+        <label for="" class="form-label" for="training-meet-time">Meet Time: </label>
+        <select class="form-select input" aria-label="Meet time dropdown list" name="training[meetTime]" id="training-meet-time" required>
+          <option selected value="0">No meet time</option>
+          <option value="5">5 minutes before</option>
+          <option value="10">10 minutes before</option>
+          <option value="15">15 minutes before</option>
+          <option value="20">20 minutes before</option>
+          <option value="25">25 minutes before</option>
+          <option value="30">30 minutes before</option>
+          <option value="45">45 minutes before</option>
+          <option value="60">60 minutes before</option>
+          <option value="90">90 minutes before</option>
+          <option value="120">120 minutes before</option>
+        </select>
+        <div class="invalid-feedback">
+          Please select a valid meet time from the dropdown menu above
+        </div>
+      </div>
+
+      <div class="mb-3 form-check">
+        <label class="form-check-label" for="repeatCheckbox">Repeat this session weekly?</label>
+        <input class="form-check-input input" type="checkbox" name="training[repeat]" id="repeatCheckbox" onclick="isChecked()" value="on">
+        <!-- hidden input that will set repeat="off" if the checbox input is NOT clicked -->
+        <input type="hidden" name="training[repeat]" id="repeatCheckboxHidden" value="off">
+      </div>
+      <div class="mb-3" id="repeat-until" style="display:none">
+        <label class="form-label" for="repeat-end">Repeat until?</label>
+        <input class="form-control input" type="date" name="training[repeatEnd]" id="repeat-end">
+        <div class=" invalid-feedback">
+          Enter a date that is at least 7 days after the start date to repeat this session weekly
+        </div>
+      </div>
+
+      <div class="mb-3">
+        <button class="btn btn-lg btn-success" type="submit">Schedule</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- NEW FIXTURE form -->
+<div class="row" id="fixture-form" style="display:none">
+  <div class="container col-10 col-md-8">
+    <h1 class="text-center">NEW FIXTURE</h1>
+    <form action="/fixture/new" method="POST" id="form" class="needs-validation" novalidate>
+      <div class="mb-3">
+        <label class="form-label" for="team">Team:</label>
+        <select class="form-select input" aria-label="Team Select Menu" name="fixture[team]" id="teamOptions" required>
+          <option value="1s">1s</option>
+          <option value="2s">2s</option>
+          <option value="3s">3s</option>
+        </select>
+        <div class="invalid-feedback">
+          Please select a team from the dropdown menu above
+        </div>
+      </div>
+      <div class="mb-3">
+        <label class="form-label" for="opponentOptions">Opponent:</label>
+        <select class="form-select input" aria-label="Opponent Select Menu" name="fixture[opponent]" id="opponentOptions" onchange="opponentSelect(this.id)" required>
+          <% for (let team of teams) {%>
+          <option value="<%= team.name %>"><%= team.name %></option>
+          <% } %>
+          <option value="Other">Other Team</option>
+        </select>
+        <div class="invalid-feedback">
+          Please select an opponent from the dropdown menu above
+        </div>
+      </div>
+      <div class="mb-3" id="otherTeam" style="display:none">
+        <label class='form-label' for='otherTeamInput'>Enter Name of 'Other Team':</label>
+        <input type='text' name='' class='form-control input' placeholder='Opponent Name' id="otherTeamInput" />
+        <div class="invalid-feedback">
+          Please enter the name of the opponent
+        </div>
+      </div>
+      <div class="mb-3">
+        <label class="form-label" for="location">Location:</label>
+        <input class="form-control input" type="text" name="fixture[location]" id="fixture-location" required>
+        <div class="invalid-feedback">
+          Please enter a location
+        </div>
+      </div>
+      <div class="mb-3">
+        <label class="form-label" for="venue">Home or Away Venue?</label>
+
+        <div class="row">
+          <div class="btn-group" role="group" aria-label="Radio toggle button group for home or away fixture">
+            <input type="radio" class="btn-check input" name="fixture[venue]" id="venueChoice1" autocomplete="off" value="Home" onclick="homeAwaySelect('venueChoice1')" required>
+            <label class="btn btn-outline-secondary" for="venueChoice1">Home</label>
+
+            <input type="radio" class="btn-check input" name="fixture[venue]" id="venueChoice2" autocomplete="off" value="Away" onclick="homeAwaySelect('venueChoice2')" required>
+            <label class="btn btn-outline-secondary" for="venueChoice2">Away</label>
+          </div>
+
+        </div>
+        <input class="form-check-input input" type="checkbox" id="homeAwayCheckboxValidation" style="display: none" required>
+        <div class="valid-feedback">Venue Selected</div>
+        <div class="invalid-feedback">Please select Home or Away</div>
+
+      </div>
+      <div class="mb-3">
+        <label class="form-label" for="date">Fixture Date: </label>
+        <input class="form-control input" type="date" name="fixture[date]" id="fixture-date" onchange="onStartDateChange('fixture-date', 'fixture-start-time', 'fixture-end-time')" onblur="startEndDateWarningCheck('fixture')" required>
+        <div class="invalid-feedback">
+          Please select a valid fixture date
+        </div>
+      </div>
+      <div class="mb-3">
+        <label class="form-label" for="fixture-start-time">Start Time: </label>
+        <input class="form-control input" type="time" name="fixture[startTime]" id="fixture-start-time" onchange="checkEndTime(document.getElementById('fixture-start-time'), document.getElementById('fixture-end-time'), 2)" onblur="startEndDateWarningCheck('fixture')" required>
+        <div class="invalid-feedback">
+          Please select a valid start time
+        </div>
+      </div>
+      <div class="mb-3">
+        <label class="form-label" for="fixture-end-time">End Time: </label>
+        <input class="form-control input" type="time" name="fixture[endTime]" id="fixture-end-time" onblur="startEndDateWarningCheck('fixture')" required>
+        <div class="invalid-feedback">
+          Please select a valid end time
+        </div>
+      </div>
+      <div id="fixtureWarningAlertDiv"></div>
+
+      <div class="mb-3">
+        <label for="" class="form-label" for="fixture-meet-time">Meet Time: </label>
+        <select class="form-select input" aria-label="Meet time dropdown list" name="fixture[meetTime]" id="fixture-meet-time" required>
+          <option selected value="0">No meet time</option>
+          <option value="5">5 minutes before</option>
+          <option value="10">10 minutes before</option>
+          <option value="15">15 minutes before</option>
+          <option value="20">20 minutes before</option>
+          <option value="25">25 minutes before</option>
+          <option value="30">30 minutes before</option>
+          <option value="45">45 minutes before</option>
+          <option value="60">60 minutes before</option>
+          <option value="90">90 minutes before</option>
+          <option value="120">120 minutes before</option>
+        </select>
+        <div class="invalid-feedback">
+          Please select a valid meet time from the dropdown menu above
+        </div>
+      </div>
+      <!-- <div class="mb-3">
+        <label class="form-label" for="end-date">End Date</label>
+        <input class="form-control" type="date" name="fixture[endDate]" id="end-date">
+      </div> -->
+      <div class="mb-3">
+        <button class="btn btn-lg btn-success" type="submit">Schedule</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- NEW EVENT form -->
+<div class="row" id="event-form" style="display:none">
+  <div class="container col-10 col-md-8">
+    <h1 class="text-center">NEW EVENT</h1>
+    <form action="/event/new" method="POST" id="form" class="needs-validation" novalidate>
+      <div class="mb-3">
+        <label class="form-label" for="title">Title:</label>
+        <input class="form-control input" type="text" name="event[title]" id="title" required>
+        <div class="invalid-feedback">
+          Please enter a title for the event
+        </div>
+      </div>
+      <div class="mb-3">
+        <label class="form-label" for="location">Location:</label>
+        <input class="form-control input" type="text" name="event[location]" id="event-location" required>
+        <div class="invalid-feedback">
+          Please enter a location
+        </div>
+      </div>
+      <div class="mb-3">
+        <label class="form-label" for="date">Event Start Date: </label>
+        <input class="form-control input" type="date" name="event[date]" id="event-date" onchange="onStartDateChange('event-date', 'event-start-time', 'event-end-time');eventStartandEndDateCheck('event-date')" required>
+        <div class="invalid-feedback">
+          Please select a valid start date
+        </div>
+      </div>
+      <div class="mb-3">
+        <label class="form-label" for="event-start-time">Start Time: </label>
+        <input class="form-control input" type="time" name="event[startTime]" id="event-start-time" onchange="checkEndTime(document.getElementById('event-start-time'), document.getElementById('event-end-time'), 1);eventStartandEndDateCheck('event-start-time')" required>
+        <div class="invalid-feedback">
+          Please select a valid start time
+        </div>
+      </div>
+      <div class="mb-3">
+        <label for="" class="form-label" for="event-meet-time">Meet Time: </label>
+        <select class="form-select input" aria-label="Meet time dropdown list" name="event[meetTime]" id="event-meet-time" required>
+          <option selected value="0">No meet time</option>
+          <option value="5">5 minutes before</option>
+          <option value="10">10 minutes before</option>
+          <option value="15">15 minutes before</option>
+          <option value="20">20 minutes before</option>
+          <option value="25">25 minutes before</option>
+          <option value="30">30 minutes before</option>
+          <option value="45">45 minutes before</option>
+          <option value="60">60 minutes before</option>
+          <option value="90">90 minutes before</option>
+          <option value="120">120 minutes before</option>
+        </select>
+        <div class="invalid-feedback">
+          Please select a valid meet time from the dropdown menu above
+        </div>
+      </div>
+      <div class="mb-3">
+        <label class="form-label" for="end-date">End Date</label>
+        <input class="form-control input" type="date" name="event[endDate]" id="event-end-date" onchange="eventStartandEndDateCheck('event-end-date')" required>
+        <div class="invalid-feedback">
+          Please select a valid end date
+        </div>
+      </div>
+      <div class="mb-3">
+        <label class="form-label" for="event-end-time">End Time: </label>
+        <input class="form-control input" type="time" name="event[endTime]" id="event-end-time" required>
+        <div class="invalid-feedback">
+          Please select a valid end time
+        </div>
+      </div>
+      <div class="mb-3">
+        <button class="btn btn-lg btn-success" type="submit">Schedule</button>
+      </div>
+    </form>
+  </div>
+</div>
+<!-- </main> -->
+<!-- </div> -->

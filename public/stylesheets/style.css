@@ -1,0 +1,71 @@
+/* a.card-link,
+a.card-link:hover, */
+.back-arrow {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* SORTING OUT BOOTSTRAP ICONS SO THEY ARE A LITTLE LARGER AND CNETRED VERTICALLY https://github.com/twbs/icons/issues/82 */
+/* .bi {
+  vertical-align: -.125em;
+  width: 1em;
+  height: 1em;
+} */
+
+/* Make icons slightly larger (aesthetically) in input group prepend/append */
+.input-group {
+  .input-group-text {
+    .bi {
+      transform: scale(1.5);
+    }
+  }
+}
+
+/* Make icons slightly larger (aesthetically) in buttons and dropdowns */
+.btn,
+.dropdown {
+   .bi {
+    transform: scale(1.5);
+    /* reset the bottom margin from above */
+    margin-bottom: 0;
+  }
+}    
+/* hide the arrow on dropdown */
+.dropdown-toggle::after {
+  content: none;
+}
+
+/* .btn-link .btn-link:hover {
+  text-decoration: none;
+  color: inherit;
+} */
+/* .btn-link, .btn-link:hover, .btn-link:active, .dropdown-item, .dropdown-item:hover, .dropdown-item:active {
+  text-decoration: none;
+  color: inherit;
+} */
+
+.delete-btn, .delete-btn:hover {
+  text-decoration: none;
+  color: red;
+}
+
+.dropdown-menu {
+  min-width: 1rem;
+}
+
+/* styling for the google autocomplete dropdown - to match bootstrap */
+.pac-item, .pac-item-query {
+  font-size: inherit;
+  font-family: inherit;
+}
+/* padding to the autocomplete dropdown */
+.pac-item {
+  padding-left: 0.75rem;
+  padding-left: 0.75rem;
+  
+}
+
+/* hides pac-icon */
+.pac-icon {
+  display: none;
+}

@@ -1,0 +1,60 @@
+<% layout('layouts/boilerplate') %>
+<!-- <main class="container col-md-10 offset-md-1"> -->
+<div class="row" id="event-form">
+  <div class="container col-10 col-md-8">
+    <h1 class="text-center">EDIT EVENT</h1>
+    <form action="/event/<%=event.id%>?_method=PUT" method="POST" id="form" class="needs-validation" novalidate>
+      <div class="mb-3">
+        <label class="form-label" for="title">Title:</label>
+        <input class="form-control input" type="text" name="event[title]" id="title" value="<%= event.title %>" required>
+      </div>
+      <div class="mb-3">
+        <label class="form-label" for="location">Location:</label>
+        <input class="form-control input" type="text" name="event[location]" id="event-location" value="<%= event.location %>" required>
+      </div>
+      <div class="mb-3">
+        <label class="form-label" for="date">Event Date: </label>
+        <input class="form-control input" type="date" name="event[date]" id="event-date" onchange="onStartDateChange('event-date', 'event-start-time', 'event-end-time');eventStartandEndDateCheck('event-date')" value="<%= event.date.toLocaleString("default", { year: "numeric" }) %>-<%= event.date.toLocaleString("default", { month: "2-digit" }) %>-<%= event.date.toLocaleString("default", { day: "2-digit" }) %>" required>
+      </div>
+      <div class="mb-3">
+        <label class="form-label" for="event-start-time">Start Time: </label>
+        <input class="form-control input" type="time" name="event[startTime]" id="event-start-time" onchange="checkEndTime(document.getElementById('event-start-time'), document.getElementById('event-end-time'), 1);eventStartandEndDateCheck('event-start-time')" value="<%= event.startTime %>" required>
+      </div>
+      <div class="mb-3">
+        <label for="" class="form-label" for="event-meet-time">Meet Time: </label>
+        <select class="form-select input" aria-label="Meet time dropdown list" name="event[meetTime]" id="event-meet-time" required>
+          <option selected value="0">No meet time</option>
+          <option value="5">5 minutes before</option>
+          <option value="10">10 minutes before</option>
+          <option value="15">15 minutes before</option>
+          <option value="20">20 minutes before</option>
+          <option value="25">25 minutes before</option>
+          <option value="30">30 minutes before</option>
+          <option value="45">45 minutes before</option>
+          <option value="60">60 minutes before</option>
+          <option value="90">90 minutes before</option>
+          <option value="120">120 minutes before</option>
+        </select>
+      </div>
+      <!-- script that sets the training meet time to equal the meet time from the db -->
+      <script>
+        document.getElementById("event-meet-time").value = <%= event.meetTime%>
+      </script>
+      <div class="mb-3">
+        <label class="form-label" for="end-date">End Date</label>
+        <input class="form-control input" type="date" name="event[endDate]" id="event-end-date" onchange="eventStartandEndDateCheck('event-end-date')" value="<%= event.endDate.toLocaleString("default", { year: "numeric" }) %>-<%= event.endDate.toLocaleString("default", { month: "2-digit" }) %>-<%= event.endDate.toLocaleString("default", { day: "2-digit" }) %>" required>
+      </div>
+      <div class="mb-3">
+        <label class="form-label" for="event-end-time">End Time: </label>
+        <input class="form-control input" type="time" name="event[endTime]" id="event-end-time" value="<%= event.endTime %>" required>
+      </div>
+      <div class="mb-3">
+        <button class="btn btn-lg btn-success" type="submit">Schedule</button>
+      </div>
+    </form>
+    <div class="mb-3">
+      <a href="/event/<%= event._id %>">Back To Event</a>
+    </div>
+  </div>
+</div>
+<!-- </main> -->

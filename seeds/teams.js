@@ -1,0 +1,23 @@
+module.exports = [
+    "Bristol Thunder 4",
+    "Bristol City 1",
+    "Exeter City 2",
+    "Exeter City 1",
+    "Exeter City 3",
+    "Bristol University 1",
+    "Taunton Soul 1",
+    "Bristol Thunder 3",
+    "Bristol Hornets 1",
+    "Taunton Soul 2",
+    "Exeter University 3",
+    "Gloucester Lions 3",
+    "Bristol Thunder 5",
+    "Exeter University 4",
+    "Bristol City 2",
+    "Exeter University 2",
+    "Taunton Soul 3",
+    "Exeter University 1",
+    "Bristol University 2",
+    "Oxford City 1",
+    "Cardiff Raptors 1"
+]

@@ -1,0 +1,172 @@
+<% layout('layouts/boilerplate') %>
+<!-- <div class="row container-fluid"> -->
+<!-- <main class="container col-md-10 offset-md-1 mt-5"> -->
+<div class="container" id="activities-container">
+  <!-- TRYING TO USE ACTIVITIES COLLECTION TO POPULATE THE INDEX -->
+  <h1><%= title.toUpperCase() %> ACTIVITIES</h1>
+  <% if (currentUser && currentUser.isAdmin === 0) {%>
+  <h2>YOU ARE A SUPER ADMIN</h2>
+  <% } %>
+  <% if (currentUser && currentUser.isAdmin === 1) {%>
+  <h2>YOU ARE A SUB ADMIN</h2>
+  <% } %>
+  <% if (currentUser && currentUser.isAdmin === 2) {%>
+  <h2>YOU ARE A REGULAR USER</h2>
+  <% } %>
+  <div>
+    <% for(let activity of activities.docs) {%>
+    <% if(activity.activity_model === "Training") {%>
+    <div class="card mb-3">
+      <div class="card-body">
+        <h4 class="card-title"><%= activity.activity_model %> @ <%=activity.activity_data.location %></h4>
+        <h6 class="card-subtitle mb-2 text-muted">
+          <%= activity.activity_data.date.toLocaleDateString("en-GB", {weekday: "long" ,
+                year:"numeric", month:"long", day:"numeric"})%>
+        </h6>
+        <% if(activity.activity_data.meetTime !==0 ) {%>
+        <p class="card-text">
+          <strong>Meet Time:</strong>
+          <!-- gets meet time as in date format -->
+          <!-- AND gets meet time as the TIME ONLY -->
+          <% const meetTimeAsDate=helper.meetTimeToDate(activity.activity_data.date,
+                  activity.activity_data.startTime, activity.activity_data.meetTime);
+                  const meetTimeOnly=helper.dateToTimeOnly(meetTimeAsDate);
+                  %>
+
+          <%=meetTimeOnly %>
+          <!-- will display the full date of the day before if the meetTime is greater than the start time -->
+          <!-- (in this instance it is assumed the meet time is the day before) -->
+          <% if(meetTimeOnly> activity.activity_data.startTime) {%>
+          (<%= helper.dateToLocaleDateString(meetTimeAsDate)%>)
+          <%} %>
+          <% } %>
+        </p>
+        <p class="card-text">
+          <strong>Start Time:</strong>
+          <%= activity.activity_data.startTime %>
+        </p>
+        <p class="card-text mb-1">
+          <strong>End Time:</strong>
+          <%= activity.activity_data.endTime %>
+          <!-- will give date of the next day if endTime is before startTime -->
+          <!-- creates variables for start time and end Time in Datetime format -->
+          <% const startTimeAsDate=helper.timeToDatetime(activity.activity_data.date,
+                activity.activity_data.startTime); const
+                endTimeAsDate=helper.timeToDatetime(activity.activity_data.date,
+                activity.activity_data.endTime); %>
+          <!-- gets the date for the next Day -->
+          <%if (startTimeAsDate> endTimeAsDate) {%>
+          <% const nextDayDate=helper.nextDayDate(activity.activity_data.date); %>
+          (<%=nextDayDate%>)
+          <% } %>
+        </p>
+        <a href="/<%= activity.activity_model.toLowerCase() %>/<%= activity.activity_data._id %>" class="stretched-link"></a>
+      </div>
+    </div>
+    <% } else if (activity.activity_model === "Fixture") {%>
+    <div class="card mb-3">
+      <div class="card-body">
+        <h4 class="card-title"><%= activity.activity_data.team %> <%= activity.activity_data.venue %> vs <%= activity.activity_data.opponent %> @ <%=activity.activity_data.location %></h4>
+        <h6 class="card-subtitle mb-2 text-muted">
+          <%= activity.activity_data.date.toLocaleDateString("en-GB", {weekday: "long" ,
+                  year:"numeric", month:"long", day:"numeric"})%>
+        </h6>
+        <% if(activity.activity_data.meetTime !==0 ) {%>
+        <p class="card-text">
+          <strong>Meet Time:</strong>
+          <!-- gets meet time as in date format -->
+          <!-- AND gets meet time as the TIME ONLY -->
+          <% const meetTimeAsDate=helper.meetTimeToDate(activity.activity_data.date,
+            activity.activity_data.startTime, activity.activity_data.meetTime);
+            const meetTimeOnly=helper.dateToTimeOnly(meetTimeAsDate);
+            %>
+
+          <%=meetTimeOnly %>
+
+          <% if(meetTimeOnly> activity.activity_data.startTime) {%>
+          (<%= helper.dateToLocaleDateString(meetTimeAsDate)%>)
+          <%} %>
+        </p>
+        <% } %>
+        <p class="card-text">
+          <strong>Start Time:</strong>
+          <%= activity.activity_data.startTime %>
+        </p>
+        <p class="card-text mb-1">
+          <strong>End Time:</strong>
+          <%= activity.activity_data.endTime %>
+          <!-- will give date of the next day if endTime is before startTime -->
+          <!-- creates variables for start time and end Time in Datetime format -->
+          <% const startTimeAsDate=helper.timeToDatetime(activity.activity_data.date,
+                  activity.activity_data.startTime); const
+                  endTimeAsDate=helper.timeToDatetime(activity.activity_data.date,
+                  activity.activity_data.endTime); %>
+          <!-- gets the date for the next Day -->
+          <%if (startTimeAsDate> endTimeAsDate) {%>
+          <% const nextDayDate=helper.nextDayDate(activity.activity_data.date); %>
+          (<%=nextDayDate%>)
+          <% } %>
+        </p>
+        <a href="/<%= activity.activity_model.toLowerCase() %>/<%= activity.activity_data._id %>" class="stretched-link"></a>
+      </div>
+    </div>
+    <% } else if (activity.activity_model === "Event") {%>
+    <div class="card mb-3">
+      <div class="card-body">
+        <h4 class="card-title"><%= activity.activity_data.title %> @ <%=activity.activity_data.location %></h4>
+        <h6 class="card-subtitle mb-2 text-muted">
+          <%= activity.activity_data.date.toLocaleDateString("en-GB", {weekday: "long" ,
+                  year:"numeric", month:"long", day:"numeric"})%>
+          <% if (activity.activity_data.date.toLocaleDateString("en-GB", {weekday: "long" , year:"numeric", month:"long", day:"numeric"}) !== activity.activity_data.endDate.toLocaleDateString("en-GB", {weekday: "long" , year:"numeric", month:"long", day:"numeric"})) { %>
+          to <%= activity.activity_data.endDate.toLocaleDateString("en-GB", {weekday: "long" ,
+                    year:"numeric", month:"long", day:"numeric"})%>
+          <% } %>
+
+        </h6>
+        <% if(activity.activity_data.meetTime !==0 ) {%>
+        <p class="card-text">
+          <strong>Meet Time:</strong>
+          <!-- gets meet time as in date format -->
+          <!-- AND gets meet time as the TIME ONLY -->
+          <% const meetTimeAsDate=helper.meetTimeToDate(activity.activity_data.date,
+            activity.activity_data.startTime, activity.activity_data.meetTime);
+            const meetTimeOnly=helper.dateToTimeOnly(meetTimeAsDate);
+            %>
+
+          <%=meetTimeOnly %>
+
+          <% if (meetTimeOnly> activity.activity_data.startTime) { %>
+          (<%= helper.dateToLocaleDateString(meetTimeAsDate)%>)
+          <% } else { %>
+          on <%= activity.activity_data.date.toLocaleDateString("en-GB", {year:"numeric", month:"long", day:"numeric"}) %>
+          <% } %>
+        </p>
+        <% } %>
+        <p class="card-text">
+          <strong>Start Time:</strong>
+          <%= activity.activity_data.startTime %> on <%= activity.activity_data.date.toLocaleDateString("en-GB", {year:"numeric", month:"long", day:"numeric"}) %>
+        </p>
+
+        <p class="card-text mb-1">
+          <strong>End Time:</strong>
+          <%= activity.activity_data.endTime %> on <%= activity.activity_data.endDate.toLocaleDateString("en-GB", {year:"numeric", month:"long", day:"numeric"}) %>
+        </p>
+        <a href="/<%= activity.activity_model.toLowerCase() %>/<%= activity.activity_data._id %>" class="stretched-link"></a>
+      </div>
+    </div>
+    <% } %>
+    <% } %>
+  </div>
+</div>
+<!-- view more button displays if the current pagination page < total pages -->
+<% if (activities.page < activities.totalPages) {%>
+<div class="text-center mb-3">
+  <a <% if (title === "Upcoming") {%> href="/schedule?page=<%= activities.nextPage %>" <% } else if (title === "Past") {%> href="/schedule/past?page=<%= activities.nextPage %>" <% } %> class="btn btn-primary" id="paginate">View More</a>
+</div>
+<% } %>
+<!-- <script src="/javascripts/pagination.js"></script> -->
+<script src="/javascripts/paginateBundle.js"></script>
+<!-- <script type="module" src="/javascripts/helper.js"></script> -->
+
+<!-- </div> -->
+<!-- </main> -->

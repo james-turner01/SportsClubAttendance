@@ -1,0 +1,104 @@
+<% layout('layouts/boilerplate') %>
+<!-- <main class="container col-md-10 offset-md-1"> -->
+
+<div class="row" id="fixture-form">
+  <div class="container col-10 col-md-8">
+    <h1 class="text-center">EDIT FIXTURE</h1>
+    <form action="/fixture/<%=fixture.id%>?_method=PUT" method="POST" id="form" class="needs-validation" novalidate>
+      <div class="mb-3">
+        <label class="form-label" for="team">Team:</label>
+        <select class="form-select input" aria-label="Team Select Menu" name="fixture[team]" id="teamOptions" required>
+          <option value="1s">1s</option>
+          <option value="2s">2s</option>
+          <option value="3s">3s</option>
+        </select>
+      </div>
+      <script>
+        document.getElementById("teamOptions").value = "<%= fixture.team%>"
+      </script>
+      <div class="mb-3">
+        <label class="form-label" for="opponentOptions">Opponent:</label>
+        <select class="form-select input" aria-label="Opponent Select Menu" name="fixture[opponent]" id="opponentOptions" onchange="opponentSelect(this.id)" required>
+          <% for (let team of teams) {%>
+          <option value="<%= team.name %>"><%= team.name %></option>
+          <% } %>
+          <option value="Other">Other Team</option>
+        </select>
+      </div>
+      <script>
+        document.getElementById("opponentOptions").value = "<%= fixture.opponent%>";
+      </script>
+      <div class="mb-3" id="otherTeam"></div>
+      <div class="mb-3">
+        <label class="form-label" for="location">Location:</label>
+        <input class="form-control input" type="text" name="fixture[location]" id="fixture-location" value="<%= fixture.location %>" required>
+      </div>
+      <div class="mb-3">
+        <label class="form-label" for="venue">Home or Away Venue?</label>
+        <div class="row">
+          <div class="btn-group" role="group" aria-label="Radio toggle button group for home or away fixture">
+            <input type="radio" class="btn-check input" name="fixture[venue]" id="venueChoice1" autocomplete="off" value="Home" onclick="homeAwaySelect('venueChoice1')" required>
+            <label class="btn btn-outline-secondary" for="venueChoice1">Home</label>
+
+            <input type="radio" class="btn-check input" name="fixture[venue]" id="venueChoice2" autocomplete="off" value="Away" onclick="homeAwaySelect('venueChoice2')" required>
+            <label class="btn btn-outline-secondary" for="venueChoice2">Away</label>
+          </div>
+          <input class="form-check-input input" type="checkbox" id="homeAwayCheckboxValidation" style="display: none" required>
+          <div class="valid-feedback">Venue Selected</div>
+          <div class="invalid-feedback">Please select Home or Away</div>
+          <script>
+            if ("<%= fixture.venue%>" === "Home") {
+              document.getElementById("venueChoice1").checked = true;
+            } else if ("<%= fixture.venue%>" === "Away") {
+              document.getElementById("venueChoice2").checked = true;
+            }
+          </script>
+        </div>
+        <!-- HIDDEN checkbox that is checked when Home or Away is selected-->
+        <!-- if home or away is not selected and the form is submitted, then the hidden radio is NOT checked so invalid feedback will appear -->
+        <script>
+          document.getElementById("homeAwayCheckboxValidation").checked = true;
+        </script>
+      </div>
+      <div class="mb-3">
+        <label class="form-label" for="date">Fixture Date: </label>
+        <input class="form-control input" type="date" name="fixture[date]" id="fixture-date" onchange="onStartDateChange('fixture-date', 'fixture-start-time', 'fixture-end-time')" value="<%= fixture.date.toLocaleString("default", { year: "numeric" }) %>-<%= fixture.date.toLocaleString("default", { month: "2-digit" }) %>-<%= fixture.date.toLocaleString("default", { day: "2-digit" }) %>" required>
+      </div>
+      <div class="mb-3">
+        <label class="form-label" for="fixture-start-time">Start Time: </label>
+        <input class="form-control input" type="time" name="fixture[startTime]" id="fixture-start-time" onchange="checkEndTime(document.getElementById('fixture-start-time'), document.getElementById('fixture-end-time'), 2)" value="<%= fixture.startTime %>" required>
+      </div>
+      <div class="mb-3">
+        <label class="form-label" for="fixture-end-time">End Time: </label>
+        <input class="form-control input" type="time" name="fixture[endTime]" id="fixture-end-time" value="<%= fixture.endTime %>" required>
+      </div>
+      <div class="mb-3">
+        <label class="form-label" for="fixture-meet-time">Meet Time: </label>
+        <select class="form-select input" aria-label="Meet time dropdown list" name="fixture[meetTime]" id="fixture-meet-time" required>
+          <option selected value="0">No meet time</option>
+          <option value="5">5 minutes before</option>
+          <option value="10">10 minutes before</option>
+          <option value="15">15 minutes before</option>
+          <option value="20">20 minutes before</option>
+          <option value="25">25 minutes before</option>
+          <option value="30">30 minutes before</option>
+          <option value="45">45 minutes before</option>
+          <option value="60">60 minutes before</option>
+          <option value="90">90 minutes before</option>
+          <option value="120">120 minutes before</option>
+        </select>
+      </div>
+      <!-- script that sets the training meet time to equal the meet time from the db -->
+      <script>
+        document.getElementById("fixture-meet-time").value = <%= fixture.meetTime%>;
+      </script>
+      <div class="mb-3">
+        <button class="btn btn-lg btn-success" type="submit">Schedule</button>
+      </div>
+    </form>
+    <div class="mb-3">
+      <a href="/fixture/<%= fixture._id %>">Back To Fixture</a>
+    </div>
+  </div>
+</div>
+<!-- </main> -->

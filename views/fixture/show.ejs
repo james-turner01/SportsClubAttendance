@@ -1,0 +1,180 @@
+<% layout('layouts/boilerplate') %>
+<!-- <div class="col-md-10 offset-md-1"> -->
+<!-- <main class="container col-md-10 offset-md-1 mt-5"> -->
+<h1>SHOWPAGE</h1>
+
+<div class="row d-flex mb-3">
+  <div class="col p-0">
+    <a href="/schedule" class="back-arrow">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left" viewBox="0 0 16 16">
+        <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z" />
+      </svg>
+    </a>
+  </div>
+  <!-- ejs to hide the delete and edit options if the user does not equal the author of the fixture session -->
+  <% if (((currentUser && fixture.author.equals(currentUser._id) || currentUser && (currentUser.isAdmin === 0 || currentUser.isAdmin ===1))) && (fixture.date >= new Date().setHours(0,0,0,0))) { %>
+  <div class="col p-0 text-end">
+    <div class="btn-group">
+      <div class="dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-three-dots-vertical" viewBox="0 0 16 16">
+          <path d="M9.5 13a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z" />
+        </svg>
+      </div>
+      <ul class="dropdown-menu dropdown-menu-end">
+        <li><a class=" dropdown-item" href="/fixture/<%= fixture._id %>/edit">Edit</a></li>
+        <li>
+          <form class="dropdown-item" action="/fixture/<%= fixture._id %>?_method=DELETE" method="POST">
+            <button class="btn btn-link p-0 delete-btn">Delete</button>
+          </form>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <% } %>
+</div>
+
+<div class="row">
+  <div class="card mb-3">
+    <div class="card-body">
+      <h4 class="card-title"><%= fixture.team %> <%= fixture.venue %> vs <%= fixture.opponent %> @ <%=fixture.location %></h4>
+      <h6 class="card-subtitle mb-2 text-muted">
+        <%= fixture.date.toLocaleDateString("en-GB", {weekday: "long" ,
+                  year:"numeric", month:"long", day:"numeric"})%>
+      </h6>
+      <% if(fixture.meetTime !==0 ) {%>
+      <p class="card-text">
+        <strong>Meet Time:</strong>
+        <!-- gets meet time as in date format -->
+        <!-- AND gets meet time as the TIME ONLY -->
+        <% const meetTimeAsDate=helper.meetTimeToDate(fixture.date,
+            fixture.startTime, fixture.meetTime);
+            const meetTimeOnly=helper.dateToTimeOnly(meetTimeAsDate);
+            %>
+
+        <%=meetTimeOnly %>
+
+        <% if(meetTimeOnly> fixture.startTime) {%>
+        (<%= helper.dateToLocaleDateString(meetTimeAsDate)%>)
+        <%} %>
+      </p>
+      <% } %>
+      <p class="card-text">
+        <strong>Start Time:</strong>
+        <%= fixture.startTime %>
+      </p>
+      <p class="card-text">
+        <strong>End Time:</strong>
+        <%= fixture.endTime %>
+        <!-- will give date of the next day if endTime is before startTime -->
+        <!-- creates variables for start time and end Time in Datetime format -->
+        <% const startTimeAsDate=helper.timeToDatetime(fixture.date,
+                fixture.startTime); const
+                endTimeAsDate=helper.timeToDatetime(fixture.date,
+                fixture.endTime); %>
+        <!-- gets the date for the next Day -->
+        <%if (startTimeAsDate> endTimeAsDate) {%>
+        <% const nextDayDate=helper.nextDayDate(fixture.date); %>
+        (<%=nextDayDate%>)
+        <% } %>
+      </p>
+      <!-- if there is someone logged in (there is a currentUser) and the activity date is not in the past, render the attendance form -->
+      <% if(currentUser && (new Date(fixture.date) >= new Date().setHours(0,0,0,0))) { %>
+      <h5>Add Your Attendance</h5>
+      <!-- <form action="/fixture/<%=fixture.id%>/attendance?_method=PUT" method="POST" id="form" class="needs-validation" novalidate> -->
+      <form id="attendance-form" class="needs-validation" novalidate>
+        <div class="row">
+          <div class="col-12 col-sm">
+            <% if (currentUser.username.length > 10) {%>
+            <label for="goingOrNot" class="col col-form-label" id="attendantUsername">
+              <%=currentUser.username.substring(0,10)%>...
+            </label>
+            <% } else { %>
+            <label for="goingOrNot" class="col col-form-label" id="attendantUsername">
+              <%=currentUser.username%>
+            </label>
+            <% } %>
+          </div>
+          <div class="col col-sm col-md-3">
+            <select class="form-select" aria-label="Going?" name="attendant[going]" id="goingOrNot" required> //onchange="this.form.submit()" required>
+              <option value="1">Going</option>
+              <option value="2">Not Going</option>
+              <option selected value="3">No Answer</option>
+            </select>
+          </div>
+          <div class="col-6 col-sm col-md-3 mb-md-0 mb-3">
+            <input class="form-control input" type="text" name="attendant[note]" id="note" placeholder="Add a Note...">
+          </div>
+          <div class="col-12 col-md-3">
+            <button class="btn btn-success col-12" type="submit">Submit</button>
+          </div>
+        </div>
+      </form>
+      <% } %>
+    </div>
+  </div>
+</div>
+
+<% if(fixture.attendants.length > 0) {%>
+<div class="row">
+  <div class="card mb-3">
+    <div class="card-body">
+      <h4 class="card-title">Attendance</h4>
+      <div id="attendants">
+        <% attendantCounter = 1 %>
+        <% for(let attendant of fixture.attendants) { %>
+        <div class="row mb-3" id="<%= attendant.author.username %>">
+          <% if (attendant.author.username.length > 8) {%>
+          <div class="col pe-sm-0">
+            <%=attendant.author.username.substring(0,8)%>...
+          </div>
+          <% } else { %>
+          <div class="col pe-sm-0">
+            <%= attendant.author.username %>
+          </div>
+          <% } %>
+          <!--px-0 px-sm-2 -->
+          <div class="col-4 col-sm-3 order-sm-last ps-0 text-end">
+            <% if (attendant.going === '1') {%>
+            Going
+            <% } else if (attendant.going === '2') {%>
+            Not going
+            <% } else if (attendant.going === '3') {%>
+            No Answer
+            <% } %>
+          </div>
+          <% if(attendant.note != '') { %>
+          <% if (attendant.note.length > 8) {%>
+          <div class="col-12 col-sm-5 pe-sm-0 pt-1 pt-sm-0 text-end text-sm-start">
+            Note: <%= attendant.note.substring(0,8) %>...
+          </div>
+          <% } else { %>
+          <div class="col-12 col-sm-5 pe-sm-0 pt-1 pt-sm-0 text-end text-sm-start">
+            Note: <%= attendant.note %>
+          </div>
+          <% } %>
+          <% } %>
+        </div>
+        <% attendantCounter +=1; %>
+        <% } %>
+      </div>
+    </div>
+  </div>
+</div>
+<% } else { %>
+<div class="row">
+  <div class="card mb-3">
+    <div class="card-body">
+      <h4 class="card-title">Attendance</h4>
+      <div id="attendants">
+        <div id="no-attendants">No Attendance added</div>
+      </div>
+    </div>
+  </div>
+</div>
+<% } %>
+
+<!-- </main> -->
+<script>
+  const event = '<%=fixture._id%>'
+</script>
+<script src="/javascripts/attendanceForm.js"></script>

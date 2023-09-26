@@ -1,0 +1,79 @@
+//require mongoose
+const mongoose = require("mongoose");
+// require attendant model
+const Attendant = require('./attendant');
+
+const Schema = mongoose.Schema;
+
+//creating our trainiing session schema
+const FixtureSchema = new Schema({
+    team: {
+        type: String,
+        required: true,
+        enum: ["1s", "2s", "3s"],
+    },
+    opponent: {
+        type: String,
+        required: true,
+    },
+    location: {
+        type: String,
+        required: true
+    },
+    venue: {
+        type: String,
+        required: true,
+        enum: ['Home', 'Away']
+    },
+    date: {
+        type: Date,
+        required: true,
+        min: new Date().setHours(0, 0, 0, 0), // makes sure the date enetered is todays date at midnight (hrs, mins, secs, ms)
+    },
+    startTime: {
+        type: String,
+        required: true,
+
+    },
+    endTime: {
+        type: String,
+        required: true
+    },
+    meetTime: {
+        type: Number,
+        required: true,
+        default: 0,
+        enum: [0, 5, 10, 15, 20, 25, 30, 45, 60, 90, 120],
+    },
+    author: {
+        type: Schema.Types.ObjectId,
+        ref: 'User'
+    },
+    attendants: [
+        {
+            type: Schema.Types.ObjectId,
+            ref: 'Attendant' // reference is the Attendant model
+        }
+    ],
+})
+
+// creating a mongoose 'findOneAndDelete' middleware that is trigerred when findOneAndDelete occurs on a fixture (this happens in our fixture delete route)
+// this middleware will run POST a deletion of a fixture
+// doc = the fixture that has just been deleted in the delete route
+FixtureSchema.post('findOneAndDelete', async function (doc) {
+    // if a doc (training session) was found and deleted
+    if (doc) {
+        console.log("DELETED!!!")
+        console.log(doc)
+        console.log(doc.attendants)
+        // delete all reviews that have an _id inside doc.reviews
+        await Attendant.deleteMany({
+            _id: {
+                $in: doc.attendants
+            }
+        })
+    }
+})
+
+//converting our schema to a model and exporting it
+module.exports = mongoose.model('Fixture', FixtureSchema)

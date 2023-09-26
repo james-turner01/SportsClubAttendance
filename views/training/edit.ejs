@@ -1,0 +1,70 @@
+<% layout('layouts/boilerplate') %>
+<!-- <main class="container col-md-10 offset-md-1"> -->
+
+<!-- New training session form -->
+<div class="row" id="training-form">
+  <div class="container col-10 col-md-8">
+    <h1 class="text-center">EDIT TRAINING SESSION</h1>
+    <!-- using method-override - uses a query string of _method= to define the request the form will make on submission -->
+    <form action="/training/<%=training.id%>?_method=PUT" method="POST" id="form" class="needs-validation" novalidate>
+      <div class="mb-3">
+        <label class="form-label" for="location">Location:</label>
+        <input class="form-control" type="text" name="training[location]" id="training-location" value="<%= training.location %>" required>
+        <div class="valid-feedback">
+          Looks good!
+        </div>
+      </div>
+      <div class="mb-3">
+        <label class="form-label" for="training-date">Training Date: </label>
+        <input class="form-control" type="date" name="training[date]" id="training-date" onchange="onStartDateChange('training-date', 'training-start-time', 'training-end-time')" value="<%= training.date.toLocaleString("default", { year: "numeric" }) %>-<%= training.date.toLocaleString("default", { month: "2-digit" }) %>-<%= training.date.toLocaleString("default", { day: "2-digit" }) %>" required>
+      </div>
+      <div class="mb-3">
+        <label class="form-label" for="training-start-time">Start Time: </label>
+        <input class="form-control" type="time" name="training[startTime]" id="training-start-time" onchange="checkEndTime(document.getElementById('training-start-time'), document.getElementById('training-end-time'), 1)" value="<%= training.startTime %>" required>
+        <!-- <div class="invalid-feedback">INVALID TIME</div> -->
+      </div>
+      <div class="mb-3">
+        <label class="form-label" for="training-end-time">End Time: </label>
+        <input class="form-control" type="time" name="training[endTime]" id="training-end-time" value="<%= training.endTime %>" required>
+      </div>
+      <div class="mb-3">
+        <label for="training-meet-time" class="form-label" for="training-meet-time">Meet Time: </label>
+        <select class="form-select" aria-label="Meet time dropdown list" name="training[meetTime]" id="training-meet-time" required>
+          <option value="0">No meet time</option>
+          <option value="5">5 minutes before</option>
+          <option value="10">10 minutes before</option>
+          <option value="15">15 minutes before</option>
+          <option value="20">20 minutes before</option>
+          <option value="25">25 minutes before</option>
+          <option value="30">30 minutes before</option>
+          <option value="45">45 minutes before</option>
+          <option value="60">60 minutes before</option>
+          <option value="90">90 minutes before</option>
+          <option value="120">120 minutes before</option>
+        </select>
+      </div>
+      <!-- script that sets the training meet time to equal the meet time from the db -->
+      <script>
+        document.getElementById("training-meet-time").value = <%= training.meetTime%>
+      </script>
+
+      <div class="form-check">
+        <!-- <label class="form-check-label" for="repeatCheckbox">Repeat this session weekly?</label>
+          <input class="form-check-input" type="checkbox" name="training[repeat]" id="repeatCheckbox" onclick="isChecked()" value="on"> -->
+        <!-- hidden input that will set repeat="off" if the checbox input is NOT clicked -->
+        <input type="hidden" name="training[repeat]" id="repeatCheckboxHidden" value="off">
+      </div>
+      <!-- <div class="mb-3" id="repeat-until" style="display:none">
+          <label class="form-label" for="repeat-end">Repeat until?</label>
+          <input class="form-control" type="date" name="training[repeatEnd]" id="repeat-end">
+        </div> -->
+      <div class="mb-3">
+        <button class="btn btn-lg btn-success" type="submit">Schedule</button>
+      </div>
+    </form>
+    <div class="mb-3">
+      <a href="/training/<%= training._id %>">Back To Training Session</a>
+    </div>
+  </div>
+</div>
+<!-- </main> -->
