@@ -106,7 +106,7 @@ const sessionConfig = {
     store, // it will now using Mongo to store our information
     // naming the session to 'session'
     name: 'session', // give the session cookie a different name to default
-    secret: 'thisshouldbeabettersecret!',
+    secret,
     resave: false,
     saveUninitialized: true,
     // adding in options for the cookie we send back to the client when a request is made
@@ -197,12 +197,13 @@ app.use((req, res, next) => {
         // store the req.originalUrl in the session as returnTo - this will be the URL that the user will be redirected to after logging in
         req.session.returnTo = req.originalUrl
     }
-    //set res.locals.currentUser to be req.user
-    res.locals.currentUser = req.user;
     // set res.locals.success to be whatever 'success' flash is, if there is one
     res.locals.success = req.flash('success');
     // set res.locals.success to be whatever 'error' flash is, if there is one
     res.locals.error = req.flash('error');
+    //set res.locals.currentUser to be req.user
+    res.locals.currentUser = req.user;
+    console.log("CURRENT USER", res.locals.currentUser)
     next();
 })
 
