@@ -44,38 +44,42 @@ const {timeToDatetime, nextDayDateFunc, meetTimeToDate, dateToTimeOnly, dateToLo
 const paginate = document.getElementById('paginate');
 //get the activiteis container element
 const activitiesContainer = document.getElementById("activities-container");
-//add event listener for when the View more anchor is clicked
-paginate.addEventListener('click', function(event) {
-    // stop the click event from trying to send the query string request (/schedule?page=...)
-    event.preventDefault();
-    // instead we will send our OWN REQUEST using Ftch API as it is a native API
-    // https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch
-    // using the fetch method to get the data from this.href = the href when the button is clicked e.g. /schedule?page=2
-    fetch(this.href)
-        // takes the response from the fetch methd
-        //response. json() method parses the JSON data as a JavaScript object
-        .then(response => response.json())
-        .then(data => {
-            // for each activity in data.docs
-            for (const activity of data.docs) {
-                // pass the activity data into the function generateActivity (see below)
-                // pass the activity data into the function generateActivity (see below)
-                const template = generateActivity(activity)
-                // console.log("template", template)
-                activitiesContainer.insertAdjacentHTML("beforeend", template)
-            }
-            // set nextPage = date.nextPage
-         const {nextPage} = data;
-            //change the anchor href (view more) so that the query is ?page=${nextPage} so that next the button can be clicked again to load the enxt 10 activites
-            if(data.page < data.totalPages)  {
-                this.href = this.href.replace(/page=\d+/, `page=${nextPage}`);
-            } else {
-                // hide the view more button
-                paginate.style.display = 'none';
-            }
-            
-        })
-})
+
+// if there is an anchor element with the id='paginate' run the event listener below
+if (paginate) {
+    //add event listener for when the View more anchor is clicked
+    paginate.addEventListener('click', function(event) {
+        // stop the click event from trying to send the query string request (/schedule?page=...)
+        event.preventDefault();
+        // instead we will send our OWN REQUEST using Ftch API as it is a native API
+        // https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch
+        // using the fetch method to get the data from this.href = the href when the button is clicked e.g. /schedule?page=2
+        fetch(this.href)
+            // takes the response from the fetch methd
+            //response. json() method parses the JSON data as a JavaScript object
+            .then(response => response.json())
+            .then(data => {
+                // for each activity in data.docs
+                for (const activity of data.docs) {
+                    // pass the activity data into the function generateActivity (see below)
+                    // pass the activity data into the function generateActivity (see below)
+                    const template = generateActivity(activity)
+                    // console.log("template", template)
+                    activitiesContainer.insertAdjacentHTML("beforeend", template)
+                }
+                // set nextPage = date.nextPage
+            const {nextPage} = data;
+                //change the anchor href (view more) so that the query is ?page=${nextPage} so that next the button can be clicked again to load the enxt 10 activites
+                if(data.page < data.totalPages)  {
+                    this.href = this.href.replace(/page=\d+/, `page=${nextPage}`);
+                } else {
+                    // hide the view more button
+                    paginate.style.display = 'none';
+                }
+                
+            })
+    })
+}
 
 function generateActivity(activity) {
     //`<h1>${activity.date}</h1>`

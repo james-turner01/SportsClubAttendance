@@ -203,7 +203,6 @@ app.use((req, res, next) => {
     res.locals.error = req.flash('error');
     //set res.locals.currentUser to be req.user
     res.locals.currentUser = req.user;
-    console.log("CURRENT USER", res.locals.currentUser)
     next();
 })
 
