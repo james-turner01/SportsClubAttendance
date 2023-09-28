@@ -47,7 +47,9 @@ module.exports.login = (req, res) => {
     // if we make it into this route, it means passport.authenticate was successful (so we logged in successfully)
     req.flash('success', 'Welcome back!');
     // Now we can use res.locals.returnTo to redirect the user after login
-    const redirectUrl = '/schedule'
+    const redirectUrl = req.session.returnTo || '/schedule'
+    //deletes returnTo from req.session
+    delete req.session.returnTo;
     res.redirect(redirectUrl);
 }
 
