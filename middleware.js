@@ -14,6 +14,7 @@ module.exports.isLoggedIn = (req, res, next) => {
     // uses isAuthenticated method from passport (part of req)
     if(!req.isAuthenticated()) {
         // store the req.originalUrl in the session as returnTo - this will be the URL that the user will be redirected to after logging in
+        req.session.returnTo = req.originalUrl;
         // req.session.returnTo = req.originalUrl
         req.flash('error', 'Please sign in.')
         return res.redirect('/login')

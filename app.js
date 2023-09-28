@@ -55,7 +55,7 @@ const mongoSanitize = require('express-mongo-sanitize');
 //our Url to access our DB
 //dbUrl = process.env.DB_URL
 //connect to database
-dbUrl = process.env.DB_URL
+const dbUrl = process.env.DB_URL || 'mongodb://127.0.0.1:/eckc-app'
 mongoose.connect(dbUrl);
 
 //error handling for connecting to a database
@@ -147,7 +147,7 @@ app.use(
         directives: {
             defaultSrc: [],
             connectSrc: ["'self'", ...connectSrcUrls],
-            scriptSrc: ["'unsafe-inline'", "'self'", 'nonce-rAnd0m', ...scriptSrcUrls],
+            scriptSrc: ["'unsafe-inline'", "'self'", ...scriptSrcUrls],
             //to allow inline event handlers. Not the secure way to do it. 
             //Could add 'nonce-' instead - would need to do for each inline event handler in the app.
             //See docs: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/script-src

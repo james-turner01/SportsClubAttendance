@@ -15,8 +15,8 @@ const Team = require('../models/team')
 const teams = require('./teams');
 
 //connect to database
-// 'mongodb://127.0.0.1:/eckc-app'
-mongoose.connect(process.env.DB_URL);
+const dbUrl = process.env.DB_URL || 'mongodb://127.0.0.1:/eckc-app'
+mongoose.connect(dbUrl);
 
 //error handling for connecting to a database
 const db = mongoose.connection;
