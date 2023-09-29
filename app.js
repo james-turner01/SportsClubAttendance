@@ -28,7 +28,7 @@ const session = require('express-session');
 const flash = require('connect-flash');
 //require PASSPORT and passport-local strategy
 const passport = require('passport');
-const LocalStrategy = require('passport-local')
+const LocalStrategy = require('passport-local');
 //require User Model
 const User = require('./models/user');
 //require training router
@@ -36,15 +36,15 @@ const attendantRoutes = require('./routes/attendants')
 //require training router
 const trainingRoutes = require('./routes/trainings');
 //require fixture router
-const fixtureRoutes = require('./routes/fixtures')
+const fixtureRoutes = require('./routes/fixtures');
 //require event router
-const eventRoutes = require('./routes/events')
+const eventRoutes = require('./routes/events');
 //require user router
-const userRoutes = require('./routes/users')
+const userRoutes = require('./routes/users');
 //require schedule router
-const scheduleRoutes = require('./routes/schedules')
+const scheduleRoutes = require('./routes/schedules');
 //require helmet
-const helmet = require('helmet')
+const helmet = require('helmet');
 
 //requring connect-mongo
 const MongoStore = require('connect-mongo');
@@ -52,10 +52,9 @@ const MongoStore = require('connect-mongo');
 //require mongo sanitize package
 const mongoSanitize = require('express-mongo-sanitize');
 
-//our Url to access our DB
-//dbUrl = process.env.DB_URL
 //connect to database
-const dbUrl = process.env.DB_URL || 'mongodb://127.0.0.1:/eckc-app'
+//const dbUrl = 'mongodb://127.0.0.1:/eckc-app'
+const dbUrl = process.env.DB_URL
 mongoose.connect(dbUrl);
 
 //error handling for connecting to a database
@@ -74,10 +73,10 @@ app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
 //telling express to parse the body from a post request
-app.use(express.urlencoded({ extended: true }))
+app.use(express.urlencoded({ extended: true }));
 //app.use so that we can use method override on forms
 // setting the query string as _method
-app.use(methodOverride('_method'))
+app.use(methodOverride('_method'));
 
 //creating secret as a .env variable
 // OR the other secret is a development backup
@@ -92,12 +91,12 @@ const store = MongoStore.create({
     crypto: {
         secret,
     }
-})
+});
 
 //check for errors for our session store
 store.on("error", function(e) {
     console.log("SESSION STORE ERROR", e)
-})
+});
 
 
 // configuring and executing session
@@ -111,7 +110,7 @@ const sessionConfig = {
     saveUninitialized: true,
     // adding in options for the cookie we send back to the client when a request is made
     cookie: {
-        HttpOnly: true, // set HttpOnly to true - if this is included in a cookie, the cookie cannot be accessed by client-side scripts
+        httpOnly: true, // set HttpOnly to true - if this is included in a cookie, the cookie cannot be accessed by client-side scripts
         //secure: true, // cookies can only be configured over https - commented out for now
         expires: Date.now() + 7 * 24 * 60 * 60 * 1000, // expires in 7 days time
         maxAge: 7 * 24 * 60 * 60 * 1000,
@@ -126,7 +125,7 @@ app.use(flash());
 app.use(helmet(
     //disabling CSP middleware for now
     //{contentSecurityPolicy: false}
-))
+));
 
 // adding in our own configuration for contentSecurityPolicy
 // sources and scripts we want to allow
@@ -137,9 +136,7 @@ const scriptSrcUrls = [
 
 ];
 const styleSrcUrls = ["https://cdn.jsdelivr.net/"];
-const connectSrcUrls = [
-    "maps.googleapis.com"
-];
+const connectSrcUrls = ["maps.googleapis.com"];
 const fontSrcUrls = [];
 
 app.use(
@@ -190,13 +187,6 @@ passport.deserializeUser(User.deserializeUser())
 // **** ALSO ACCESSES REQ.USER (and store it in res.locals.currentUser) FOR EVERY REQUEST SO THAT WE HAVE ACCESS TO USER INFO (req.user is coming from the session, thanks to passport)
 // **** We can then hide log in or logout depending on whether someone is loggedin or not
 app.use((req, res, next) => {
-    // if '/login' or '/' is NOT in the orignalUrl on the request
-    // https://www.youtube.com/watch?v=g7SaXCYCgXU
-    if(!['/login', '/'].includes(req.originalUrl)) {
-        // return to the originalUrl where the request came from
-        // store the req.originalUrl in the session as returnTo - this will be the URL that the user will be redirected to after logging in
-        req.session.returnTo = req.originalUrl
-    }
     // set res.locals.success to be whatever 'success' flash is, if there is one
     res.locals.success = req.flash('success');
     // set res.locals.success to be whatever 'error' flash is, if there is one

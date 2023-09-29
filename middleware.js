@@ -9,24 +9,25 @@ const {trainingSchema, fixtureSchema, eventSchema, attendantSchema} = require('.
 // require ExpressError (our own defined Error class)
 const ExpressError = require('./utils/ExpressError');
 
-module.exports.isLoggedIn = (req, res, next) => {    
-    // checking that a user is logged in - they must be logged in to add a new campground
-    // uses isAuthenticated method from passport (part of req)
-    if(!req.isAuthenticated()) {
-        // store the req.originalUrl in the session as returnTo - this will be the URL that the user will be redirected to after logging in
+// middleware that checks to see if the user is logged in
+module.exports.isLoggedIn = (req, res, next) => {
+    // if user is NOT signed in
+    if (!req.isAuthenticated()) {
+        // store the oringalUrl we were trying to request in the session under property called returnTo
         req.session.returnTo = req.originalUrl;
-        // req.session.returnTo = req.originalUrl
-        req.flash('error', 'Please sign in.')
-        return res.redirect('/login')
+        //flash error
+        req.flash('error', 'You must be signed in first!');
+        // redirect to login page
+        return res.redirect('/login');
     }
-    // otherwise if you are logged in, call next()
-    next()
+    // if you are authenticated, call next
+    next();
 }
 
 // middleware that will save the storeReturnTo value from the session to res.locals.returnTo
 // this middleware must run before passport.authenticate()
 // otherwise, if it ran after passport.authenticate() session would have been cleared after a successful login (athentcate())
-module.exports.storeReturnTo = (req, res, next) => {
+module.exports.storeReturnTo = async(req, res, next) => {
     if (req.session.returnTo) {
         res.locals.returnTo = req.session.returnTo;
     }
@@ -54,7 +55,7 @@ module.exports.isTrainingAuthor = async(req, res, next) => {
     const {id} = req.params;
     // checks to see if the logged in user is an admin, if they are, return next()
     if(req.user.isAdmin === 0 || req.user.isAdmin === 1) {
-        console.log("ADMIN IS TURE")
+        console.log("ADMIN IS TRUE")
         return next()
     }
     // access the traiing session by it's id and update it
@@ -89,7 +90,7 @@ module.exports.isFixtureAuthor = async(req, res, next) => {
     const {id} = req.params;
     // checks to see if the logged in user is an admin, if they are, return next()
     if(req.user.isAdmin === 0 || req.user.isAdmin === 1) {
-        console.log("ADMIN IS TURE")
+        console.log("ADMIN IS TRUE")
         return next()
     }
     // access the fixture by it's id and update it
@@ -109,7 +110,7 @@ module.exports.validateEvent = (req, res, next) => {
     const {error} = eventSchema.validate(req.body);
     // checks to see if the logged in user is an admin, if they are, return next()
     if(req.user.isAdmin === 0 || req.user.isAdmin === 1) {
-        console.log("ADMIN IS TURE")
+        console.log("ADMIN IS TRUE")
         return next()
     }
     //  if Joi schema throws an error, throw an Express Erorr to pass on to our error handler route
@@ -129,7 +130,7 @@ module.exports.isEventAuthor = async(req, res, next) => {
     const {id} = req.params;
     // checks to see if the logged in user is an admin, if they are, return next()
     if(req.user.isAdmin === 0 || req.user.isAdmin === 1) {
-        console.log("ADMIN IS TURE")
+        console.log("ADMIN IS TRUE")
         return next()
     }
     // access the event by it's id and update it

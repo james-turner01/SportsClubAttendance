@@ -3,19 +3,18 @@
 // if we are running in development mode require thedotenv package
 // it will hten take the variables we have defined in our .env file and add them int process.env in our node app
 // so we can access them in our files
-if (process.env.NODE_ENV !== 'production') {
-    require('dotenv').config();
-}
+// if (process.env.NODE_ENV !== 'production') {
+//     require('dotenv').config();
+// }
 
 const express = require('express');
 const router = express.Router();
 //require catchAsync
 const catchAsync = require('../utils/catchAsync');
+// require storeReturnTo middleware
+const {storeReturnTo} = require('../middleware');
 //require passport 
 const passport = require('passport');
-// require storeReturnTo middleware
-const { storeReturnTo } = require('../middleware');
-
 //require users controller
 const users = require('../controllers/users');
 
@@ -28,12 +27,11 @@ router.route('/register')
 router.route('/login')
     //get request for login page
     .get(users.renderLogin)
-    //post request when logging in
-    //passport middleware called passport.authenticate() - to authenticate the login details to passport-local strategy
-    // failureFlash: true - automatically flash an error message if login fails
-    //failureRedirect: '/login' - if login goes wrong it will redirect to '/login'
-    // *** use the storeReturnTo middleware to save the returnTo value from session to res.locals
-    .post(storeReturnTo, passport.authenticate('local', {failureFlash: true, failureRedirect: '/login'}), users.login)
+    // post request when logging in
+    // note: using passports authenticate method where:
+    // failureFlash: true (flash a message automatically if login fails)
+    // failureRedirect: '/login' if it fails to login it will redirect us to the login page again
+    .post(storeReturnTo, passport.authenticate('local', { failureFlash: true, failureRedirect: '/login' }), users.login)
 
 router.get('/logout', users.logout)
 
