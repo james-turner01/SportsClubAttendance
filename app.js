@@ -53,8 +53,8 @@ const MongoStore = require('connect-mongo');
 const mongoSanitize = require('express-mongo-sanitize');
 
 //connect to database
-const dbUrl = 'mongodb://127.0.0.1:/eckc-app'
-//const dbUrl = process.env.DB_URL
+// const dbUrl = 'mongodb://127.0.0.1:/eckc-app'
+const dbUrl = process.env.DB_URL
 mongoose.connect(dbUrl);
 
 //error handling for connecting to a database
