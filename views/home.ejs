@@ -2,4 +2,50 @@
 <html lang="en">
 
 <% layout('layouts/boilerplate') %>
-<h1>HOMEPAGE</h1>
+<h1>WELCOME</h1>
+<div class="row mb-3">
+    <p>Welcome to this Sports Attendance App!</p>
+    <p>This app is designed to be used by a Sports Club to allow club members to add their attendance to the following club activities:
+        <ul class="ms-4 mb-0">
+            <li>Training Sessions</li>
+            <li>Match Fixtures</li>
+            <li>Club Events</li>
+        </ul>
+    </p>         
+</div>
+<div class="row mb-3">
+    <h3>Adding Your Attendance to an Activity</h3>
+    <p>To add your attendance to a Training Session, Match Fixture, or Club Event:
+        <ol class="ms-4 mb-0">
+            <li><a href="/login">Log in</a> to your account.</li>
+            <li>Go to the <a href="/schedule">Schedule</a> page.</li>
+            <li>Select the club activity you want to add your attendance to.</li>
+            <li>Complete the attendance form.</li>
+        </ol>
+    </p>
+    <p><b>Note:</b> If you do not have an account, please sign up by going to the <a href="/register">Register</a> page.</p>
+</div>
+<div class="row mb-3">
+    <h3>Creating a Club Activity</h3>
+    <p>
+        To create a Training Session, Match Fixture, or Club Event:
+        <ol class="ms-4 mb-0">
+            <li><a href="/login">Log in</a> to your account. <br><b>Note:</b> The account must have admin capabilities.</li>
+            <li>Go to the <a href="/training/new">Add Activity</a> page.</li>
+            <li>Fill in the relevant form to create an activity.</li>
+        </ol>
+    </p>
+</div>
+<div class="row mb-3">
+    <h3>Creating an Account with Admin Capabilities</h3>
+    <p>
+        To create an account with admin capabilities:
+        <ol class="ms-4 mb-0">
+            <li>Go to the <a href="/register">Register</a> page.</li>
+            <li>Complete and submit the registration form. <br><b>Note:</b> You must complete the Admin Code field. If you require the admin code field please contact the site administrator.</li>
+        </ol>
+    </p>
+    <p>
+        If the account has admin capabilities you should be able to see <a href="/training/new">Add Activity</a> in the navigation bar. When you click 'Add Activity', you will be able to complete the appropriate form to create an activity.
+    </p>
+</div>
