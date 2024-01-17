@@ -53,13 +53,13 @@ module.exports.validateTraining = (req, res, next) =>  {
 // function that checks that the person trying to edit or delete a training session is the same user that created the session
 module.exports.isTrainingAuthor = async(req, res, next) => {
     const {id} = req.params;
-    // checks to see if the logged in user is an admin, if they are, return next()
-    if(req.user.isAdmin === 0 || req.user.isAdmin === 1) {
+    // access the traiing session by it's id and update it
+    const training = await Training.findById(id);
+    // checks to see if the logged in user is a superadmin (0) or a regular admin (1) AND are the author of the event, if they are, return next()
+    if(req.user.isAdmin === 0 || (req.user.isAdmin === 1 && training.author.equals(req.user._id))) {
         console.log("ADMIN IS TRUE")
         return next()
     }
-    // access the traiing session by it's id and update it
-    const training = await Training.findById(id);
     // if the req.user._id does NOT equal the author of the training session then flash error
     if(!training.author.equals(req.user._id)) {
         req.flash('error', 'You do not have permission to do that!')
@@ -88,13 +88,13 @@ module.exports.validateFixture = (req, res, next) => {
 // function that checks that the person trying to edit or delete a training session is the same user that created the session
 module.exports.isFixtureAuthor = async(req, res, next) => {
     const {id} = req.params;
-    // checks to see if the logged in user is an admin, if they are, return next()
-    if(req.user.isAdmin === 0 || req.user.isAdmin === 1) {
+    // access the fixture by it's id and update it
+    const fixture = await Fixture.findById(id);
+    // checks to see if the logged in user is a superadmin (0) or a regular admin (1) AND are the author of the event, if they are, return next()
+    if(req.user.isAdmin === 0 || (req.user.isAdmin === 1 && fixture.author.equals(req.user._id))) {
         console.log("ADMIN IS TRUE")
         return next()
     }
-    // access the fixture by it's id and update it
-    const fixture = await Fixture.findById(id);
     // if the req.user._id does NOT equal the author of the training session then flash error
     if(!fixture.author.equals(req.user._id)) {
         req.flash('error', 'You do not have permission to do that!')
@@ -128,13 +128,13 @@ module.exports.validateEvent = (req, res, next) => {
 // function that checks that the person trying to edit or delete an event is the same user that created the session
 module.exports.isEventAuthor = async(req, res, next) => {
     const {id} = req.params;
-    // checks to see if the logged in user is an admin, if they are, return next()
-    if(req.user.isAdmin === 0 || req.user.isAdmin === 1) {
+    // access the event by it's id and update it
+    const event = await Event.findById(id);
+    // checks to see if the logged in user is a superadmin (0) or a regular admin (1) AND are the author of the event, if they are, return next()
+    if(req.user.isAdmin === 0 || (req.user.isAdmin === 1 && event.author.equals(req.user._id))) {
         console.log("ADMIN IS TRUE")
         return next()
     }
-    // access the event by it's id and update it
-    const event = await Event.findById(id);
     // if the req.user._id does NOT equal the author of the training session then flash error
     if(!event.author.equals(req.user._id)) {
         req.flash('error', 'You do not have permission to do that!')

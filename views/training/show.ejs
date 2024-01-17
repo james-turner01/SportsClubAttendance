@@ -14,7 +14,7 @@
   <!-- ejs to hide the delete and edit options if the user does not equal the author of the training session OR training date is less than the current date-->
   <%= console.log(training.date, "now", new Date(new Date().setHours(0,0,0,0))) %>
   <%= console.log(training.date < new Date()) %>
-  <% if (((currentUser && training.author.equals(currentUser._id) || currentUser && (currentUser.isAdmin === 0 || currentUser.isAdmin ===1))) && (training.date >= new Date().setHours(0,0,0,0))) { %>
+  <% if (((currentUser && training.author.equals(currentUser._id) || currentUser && currentUser.isAdmin === 0)) && (training.date >= new Date().setHours(0,0,0,0))) { %>
   <div class="col pe-2 text-end">
     <div class="btn-group">
       <div class="dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">

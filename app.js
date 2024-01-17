@@ -221,7 +221,8 @@ app.use(mongoSanitize())
 
 //get request for home route
 app.get('/', catchAsync(async (req, res) => {
-    res.render('home')
+    const adminCode = process.env.ADMINCODELEVELONE;
+    res.render('home', {adminCode})
 }))
 
 // *** OUR ERROR HANDLER ***
